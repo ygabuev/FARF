@@ -7,6 +7,8 @@ def load_image(filename, luminance=True) :
     img = Image.open(filename)
     img.load()
     img_array = np.asarray(img, dtype="int32")
+    if luminance:
+        img_array = img_array.mean(axis=2)
     return img_array
 
 
