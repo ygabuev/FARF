@@ -1,7 +1,7 @@
 import numpy as np
 
 from sklearn.ensemble import RandomTreesEmbedding
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import Lasso, Ridge
 
 class RandomForestClustRegressor(RandomTreesEmbedding):
     def __init__(self,
@@ -15,6 +15,7 @@ class RandomForestClustRegressor(RandomTreesEmbedding):
                  warm_start=False,
                  bootstrap=True,
                  max_features=1,
+                 reg_type='lasso',
                  alpha=0.1):
         super(RandomForestClustRegressor, self).__init__(
             n_estimators=n_estimators,
@@ -28,7 +29,10 @@ class RandomForestClustRegressor(RandomTreesEmbedding):
         
         self.bootstrap = bootstrap
         self.max_features = max_features
-        self.alpha = alpha # LASSO coefficient
+        if reg_type not in ['lasso', 'ridge']:
+            raise ValueError("'reg_type' must be one of ['lasso', 'ridge']")
+        self.reg_type = reg_type
+        self.alpha = alpha # regression penalty coefficient
         
         self.k_in = None
         self.k_out = None
@@ -69,7 +73,10 @@ class RandomForestClustRegressor(RandomTreesEmbedding):
             for leaf, inds in leaves.items():
                 X_ = X[inds]
                 Y_ = Y[inds]
-                reg = Lasso(alpha=self.alpha, fit_intercept=True)
+                if reg_type == 'lasso':
+                    reg = Lasso(alpha=self.alpha, fit_intercept=True)
+                elif reg_type == 'ridge':
+                    reg = Ridge(alpha=self.alpha, fit_intercept=True)
                 reg.fit(X_, Y_)
                 tree_map[leaf] = reg
             map[tree] = tree_map
