@@ -1,5 +1,4 @@
 import numpy as np
-
 from sklearn.ensemble import RandomTreesEmbedding
 from sklearn.linear_model import Lasso, Ridge
 
@@ -73,9 +72,9 @@ class RandomForestClustRegressor(RandomTreesEmbedding):
             for leaf, inds in leaves.items():
                 X_ = X[inds]
                 Y_ = Y[inds]
-                if reg_type == 'lasso':
+                if self.reg_type == 'lasso':
                     reg = Lasso(alpha=self.alpha, fit_intercept=True)
-                elif reg_type == 'ridge':
+                elif self.reg_type == 'ridge':
                     reg = Ridge(alpha=self.alpha, fit_intercept=True)
                 reg.fit(X_, Y_)
                 tree_map[leaf] = reg
