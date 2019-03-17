@@ -14,7 +14,8 @@ class RandomForestClustRegressor(RandomTreesEmbedding):
                  random_state=7,
                  warm_start=False,
                  bootstrap=True,
-                 max_features=1):
+                 max_features=1,
+                 alpha=0.1):
         super(RandomForestClustRegressor, self).__init__(
             n_estimators=n_estimators,
             max_depth=max_depth,
@@ -27,6 +28,7 @@ class RandomForestClustRegressor(RandomTreesEmbedding):
         
         self.bootstrap = bootstrap
         self.max_features = max_features
+        self.alpha = alpha # LASSO coefficient
         
         self.k_in = None
         self.k_out = None
@@ -67,7 +69,7 @@ class RandomForestClustRegressor(RandomTreesEmbedding):
             for leaf, inds in leaves.items():
                 X_ = X[inds]
                 Y_ = Y[inds]
-                reg = Lasso(alpha=0.1, fit_intercept=True)
+                reg = Lasso(alpha=self.alpha, fit_intercept=True)
                 reg.fit(X_, Y_)
                 tree_map[leaf] = reg
             map[tree] = tree_map
