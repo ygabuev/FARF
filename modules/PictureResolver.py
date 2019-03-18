@@ -10,10 +10,10 @@ class PictureResolver:
         self.rf = rf
         self.lsh = lsh
     
-    def resolve(self, img_in, patch_size=(9,9), step=6):
+    def resolve(self, img_in, patch_size=(9,9), step=6, augmented=True):
         assert img_in.ndim == 2
         
-        features = utils.get_features(img_in)
+        features = utils.get_features(img_in, augmented=augmented)
         n_features = features.shape[-1]
         patches = self._split_into_patches(features, (*patch_size, n_features), step=6)
         patches_arr_size = patches.shape[0:2]
