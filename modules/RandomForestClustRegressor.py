@@ -73,7 +73,7 @@ class RandomForestClustRegressor(RandomTreesEmbedding):
                 X_ = X[inds]
                 Y_ = Y[inds]
                 if self.reg_type == 'lasso':
-                    reg = Lasso(alpha=self.alpha, fit_intercept=True)
+                    reg = Lasso(alpha=self.alpha, fit_intercept=True, max_iter=2000)
                 elif self.reg_type == 'ridge':
                     reg = Ridge(alpha=self.alpha, fit_intercept=True)
                 reg.fit(X_, Y_)

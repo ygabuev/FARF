@@ -20,7 +20,7 @@ def resize(img_array, s=0.5, interpolation=Image.BICUBIC):
     size = (s * np.array(img_array.shape[0:2])).astype(np.int)
     return np.array(Image.fromarray(img_array).resize(size, interpolation))
 
-def get_features(patch):
+def get_features(patch, augmented=True):
     """
     Extract the following features from the input patch:
       - first-order gradients  [-1,0,1] in both directions
@@ -39,7 +39,8 @@ def get_features(patch):
     for k in [k1,k2,k3,k4]:
         F = scipy.signal.convolve2d(patch, k, mode='same')
         Fs.append(F)
-    Fs.append(np.sqrt(Fs[0]**2 + Fs[1]**2))
-    Fs.append(np.sqrt(Fs[2]**2 + Fs[3]**2))
+    if augmented:
+        Fs.append(np.sqrt(Fs[0]**2 + Fs[1]**2))
+        Fs.append(np.sqrt(Fs[2]**2 + Fs[3]**2))
     Fs = np.dstack(Fs)
     return Fs

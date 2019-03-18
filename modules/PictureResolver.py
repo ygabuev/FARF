@@ -4,7 +4,7 @@ import utils
 
 class PictureResolver:
     # TODO: make size-informed and shape-agnostic
-    # currently based on 9x9 patches and 6 features
+    # currently based on 9x9 patches
     
     def __init__(self, rf, lsh):
         self.rf = rf
@@ -14,7 +14,8 @@ class PictureResolver:
         assert img_in.ndim == 2
         
         features = utils.get_features(img_in)
-        patches = self._split_into_patches(features, (*patch_size, 6), step=6)
+        n_features = features.shape[-1]
+        patches = self._split_into_patches(features, (*patch_size, n_features), step=6)
         patches_arr_size = patches.shape[0:2]
 
         X = np.reshape(patches, (np.prod(patches_arr_size), -1))
