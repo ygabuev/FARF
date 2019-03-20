@@ -10,14 +10,10 @@ class IdentityLSH:
     def fit(self, X, n_iter=None):
         return self
     
-    def fit_transform(self, X, n_iter=None, binary=None):
-        if binary == True:
-            warnings.warn("'binary=True' is only meaningful for RotationLSH")
+    def fit_transform(self, X, n_iter=None):
         return X
     
-    def transform(self, X, binary=None):
-        if binary == True:
-            warnings.warn("'binary=True' is only meaningful for RotationLSH")
+    def transform(self, X):
         return X
 
     
@@ -29,22 +25,20 @@ class PcaLSH(PCA):
         super().fit(X)
         return self
     
-    def fit_transform(self, X, n_iter=None, binary=None):
-        if binary == True:
-            warnings.warn("'binary=True' is only meaningful for RotationLSH")
+    def fit_transform(self, X, n_iter=None):
         return super().fit_transform(X)
     
-    def transform(self, X, binary=None):
-        if binary == True:
-            warnings.warn("'binary=True' is only meaningful for RotationLSH")
+    def transform(self, X):
         return super().transform(X)
     
     
 class RotationLSH:
-    def __init__(self):
+    def __init__(self, binary):
         self.R = None
+        self.binary = binary
     
-    def fit(self, X, n_iter=5):
+    
+    def fit(self, X, n_iter=20):
         assert X.ndim == 2
         m, k = X.shape
         
@@ -57,16 +51,17 @@ class RotationLSH:
             B = np.sign(X @ R)
             U, _, Vt = np.linalg.svd(B.T @ X)
             R = U @ Vt
-        
         self.R = R
         return self
     
-    def fit_transform(self, X, n_iter=20, binary=False):
-        self.fit(X, n_iter)
-        return self.transform(X, binary)
     
-    def transform(self, X, binary=False):
+    def fit_transform(self, X, n_iter=20):
+        self.fit(X, n_iter)
+        return self.transform(X)
+    
+    
+    def transform(self, X):
         X_comp = X @ self.R
-        if binary:
+        if self.binary:
             X_comp = np.sign(X_comp)
         return X_comp

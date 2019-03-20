@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 import skimage.util
 import utils
@@ -9,6 +10,7 @@ class PictureResolver:
     def __init__(self, rf, lsh, scaler):
         # rf - fitted random forest
         # lsh - fitted lsh
+        # scaler - fitted StandardScaler
         self.rf = rf
         self.lsh = lsh
         self.scaler = scaler
@@ -36,7 +38,10 @@ class PictureResolver:
                 p = patch_size[0]
                 img_out_delta[step*i:step*i+p, step*j:step*j+p] += patch
                 div_coef[step*i:step*i+p, step*j:step*j+p] += np.ones(patch_size)
-        img_out_delta /= div_coef
+        
+        with warnings.catch_warnings():     # do not warn on division by zero
+            warnings.simplefilter("ignore")
+            img_out_delta /= div_coef
         return img_in + img_out_delta
     
     def _split_into_patches(self, img_array, patch_size, step=6):
